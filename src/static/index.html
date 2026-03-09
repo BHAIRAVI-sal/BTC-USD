@@ -5,33 +5,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BTCUSD Forecasting | Professional Analytics</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --bg-page: #f8fafc;
-            --bg-card: #ffffff;
-            --primary: #2563eb;
-            --primary-light: #eff6ff;
-            --secondary: #7c3aed;
-            --secondary-light: #f5f3ff;
-            --accent: #0d9488;
-            --text-main: #1e293b;
-            --text-dim: #64748b;
-            --border: #e2e8f0;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.04), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
-            --success: #10b981;
-            --error: #ef4444;
-            --warning: #f59e0b;
+            --bg-page: #F7F9FC;
+            --bg-card: #FFFFFF;
+            --primary: #4F46E5;
+            --primary-light: #EEF2FF;
+            --secondary: #22C55E;
+            --secondary-light: #DCFCE7;
+            --accent: #4F46E5;
+            --text-main: #1F2937;
+            --text-dim: #6B7280;
+            --border: #E5E7EB;
+            --shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.08);
+            --success: #22C55E;
+            --error: #EF4444;
+            --warning: #F59E0B;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Outfit', sans-serif;
+            font-family: 'Inter', 'Poppins', sans-serif;
         }
 
         body {
@@ -98,7 +100,7 @@
         .nav-item.active {
             background: var(--primary);
             color: white;
-            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.2);
+            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.2);
         }
 
         /* Main Content area */
@@ -130,20 +132,22 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            padding: 0.5rem 1rem;
+            padding: 0.6rem 1.2rem;
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 100px;
             font-size: 0.85rem;
             font-weight: 600;
             box-shadow: var(--shadow);
+            color: var(--text-main);
         }
 
         .status-pill span {
-            width: 8px;
-            height: 8px;
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
             background: var(--success);
+            box-shadow: 0 0 8px var(--success);
         }
 
         /* Pages */
@@ -173,20 +177,20 @@
         .metric-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 1.5rem;
+            gap: 24px;
         }
 
         .card {
             background: var(--bg-card);
             border: 1px solid var(--border);
-            padding: 1.5rem;
-            border-radius: 20px;
+            padding: 20px;
+            border-radius: 16px;
             box-shadow: var(--shadow);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
         }
 
         .card:hover {
-            transform: translateY(-2px);
+            transform: translateY(-3px);
             box-shadow: var(--shadow-lg);
         }
 
@@ -196,13 +200,20 @@
             color: var(--text-dim);
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin-bottom: 0.75rem;
+            margin-bottom: 1.25rem;
             display: flex;
             justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-title {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.75rem;
+            margin-bottom: 1.5rem;
         }
 
         .card-value {
-            font-size: 1.75rem;
+            font-size: 28px;
             font-weight: 700;
             color: var(--text-main);
         }
@@ -227,27 +238,27 @@
         .chart-section {
             display: grid;
             grid-template-columns: 2fr 1fr;
-            gap: 1.5rem;
+            gap: 24px;
         }
 
         .card-large {
             background: var(--bg-card);
             border: 1px solid var(--border);
             padding: 2rem;
-            border-radius: 24px;
+            border-radius: 16px;
             box-shadow: var(--shadow);
         }
 
         /* Best Model Card */
         .best-model-card {
-            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            background: linear-gradient(135deg, #1F2937 0%, #374151 100%);
             color: white;
-            padding: 2.5rem;
-            border-radius: 24px;
+            padding: 2rem 2.5rem;
+            border-radius: 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
             margin-bottom: 2rem;
             position: relative;
             overflow: hidden;
@@ -387,7 +398,17 @@
         }
 
         tbody tr:hover {
-            background: #f1f5f9;
+            background: #F3F4F6;
+        }
+
+        tbody tr:nth-child(even) {
+            background: #FAFAFA;
+        }
+
+        .table-container {
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border);
         }
 
         .badge {
@@ -420,13 +441,15 @@
         }
 
         .btn-primary {
-            background: var(--primary);
+            background: linear-gradient(135deg, #4F46E5, #6366F1);
             color: white;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
         }
 
         .btn-primary:hover {
-            opacity: 0.9;
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(79, 70, 229, 0.3);
+            opacity: 1;
         }
 
         .chart-holder {
@@ -525,13 +548,13 @@
 
             <div class="chart-section">
                 <div class="card-large">
-                    <div class="card-label">Prediction Trend & Actual Price</div>
+                    <div class="card-label section-title">Prediction Trend & Actual Price</div>
                     <div class="chart-holder">
                         <canvas id="forecastChart"></canvas>
                     </div>
                 </div>
                 <div class="card-large" style="padding: 1.5rem;">
-                    <div class="card-label">System Logs (Live IST)</div>
+                    <div class="card-label section-title">System Logs (Live IST)</div>
                     <div class="table-container" style="max-height: 380px; overflow-y: auto;">
                         <table id="overview-logs-table" style="font-size: 0.8rem;">
                             <thead>
@@ -601,7 +624,7 @@
 
             <div class="chart-section">
                 <div class="card-large">
-                    <div class="card-label">Model Leaderboard (Ranked by RMSE)</div>
+                    <div class="card-label section-title">Model Leaderboard (Ranked by RMSE)</div>
                     <div class="table-container">
                         <table class="leaderboard-table">
                             <thead>
@@ -620,7 +643,7 @@
                     </div>
                 </div>
                 <div class="card-large">
-                    <div class="card-label">RMSE Comparison by Model</div>
+                    <div class="card-label section-title">RMSE Comparison by Model</div>
                     <div style="height: 300px;">
                         <canvas id="rmseChart"></canvas>
                     </div>
@@ -662,7 +685,7 @@
                 </div>
             </div>
             <div class="card-large">
-                <div class="card-label">Prediction Error over Time</div>
+                <div class="card-label section-title">Prediction Error over Time</div>
                 <div style="height: 300px;">
                     <canvas id="errorChart"></canvas>
                 </div>
@@ -672,7 +695,7 @@
         <!-- CONTROL CENTER PAGE -->
         <div id="page-control" class="page">
             <div class="card-large">
-                <div class="card-label">Prediction History</div>
+                <div class="card-label section-title">Prediction History</div>
                 <div class="table-container">
                     <table id="history-table">
                         <thead>
@@ -811,14 +834,62 @@
                 data: {
                     labels,
                     datasets: [
-                        { label: 'Actual', data: actuals, borderColor: '#2563eb', tension: 0.4, pointRadius: 3 },
-                        { label: 'Ensemble', data: ensembles, borderColor: '#10b981', borderDash: [5, 5], tension: 0.4, pointRadius: 4 },
-                        { label: 'ARIMA', data: arimas, borderColor: '#8b5cf6', pointRadius: 0 },
-                        { label: 'LR', data: lrs, borderColor: '#f59e0b', pointRadius: 0 },
-                        { label: 'LSTM', data: lstms, borderColor: '#ec4899', pointRadius: 3 }
+                        { label: 'Actual', data: actuals, borderColor: '#3B82F6', tension: 0.4, pointRadius: 2, borderWidth: 3 },
+                        { label: 'Ensemble', data: ensembles, borderColor: '#10B981', tension: 0.4, pointRadius: 0, borderWidth: 3 },
+                        { label: 'ARIMA', data: arimas, borderColor: '#8B5CF6', tension: 0.4, pointRadius: 0, borderWidth: 3 },
+                        { label: 'LR', data: lrs, borderColor: '#F59E0B', tension: 0.4, pointRadius: 0, borderWidth: 3 },
+                        { label: 'LSTM', data: lstms, borderColor: '#EC4899', tension: 0.4, pointRadius: 2, borderWidth: 3 }
                     ]
                 },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        intersect: false,
+                        mode: 'index',
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { usePointStyle: true, padding: 20, font: { family: 'Inter', size: 12, weight: 500 } }
+                        },
+                        tooltip: {
+                            backgroundColor: '#FFFFFF',
+                            titleColor: '#1F2937',
+                            bodyColor: '#1F2937',
+                            borderColor: '#E5E7EB',
+                            borderWidth: 1,
+                            padding: 12,
+                            boxPadding: 4,
+                            usePointStyle: true,
+                            callbacks: {
+                                label: function (context) {
+                                    return ' ' + context.dataset.label + ': ' + formatCurrency(context.parsed.y);
+                                }
+                            }
+                        }
+                    },
+                    elements: {
+                        line: {
+                            borderCapStyle: 'round',
+                            borderJoinStyle: 'round'
+                        },
+                        point: {
+                            hoverRadius: 6,
+                            hoverBorderWidth: 2
+                        }
+                    },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { font: { family: 'Inter' } } },
+                        y: {
+                            grid: { color: '#F1F5F9' },
+                            ticks: {
+                                font: { family: 'Inter' },
+                                callback: function (value) { return '$' + (value / 1000) + 'k'; }
+                            }
+                        }
+                    }
+                }
             });
         }
 
@@ -864,26 +935,62 @@
                     type: 'bar',
                     data: {
                         labels: ['LR', 'ARIMA', 'LSTM', 'Ensemble'],
-                        datasets: [{ label: 'RMSE', data: [stats.lr?.rmse, stats.arima?.rmse, stats.lstm?.rmse, stats.ensemble?.rmse], backgroundColor: ['#f1f5f9', '#f1f5f9', '#7c3aed', '#2563eb'] }]
+                        datasets: [{
+                            label: 'RMSE',
+                            data: [stats.lr?.rmse, stats.arima?.rmse, stats.lstm?.rmse, stats.ensemble?.rmse],
+                            backgroundColor: ['#F59E0B', '#8B5CF6', '#EC4899', '#4F46E5'],
+                            borderRadius: 8
+                        }]
                     },
-                    options: { responsive: true, maintainAspectRatio: false }
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: { grid: { display: false } },
+                            y: { grid: { color: '#F1F5F9' } }
+                        }
+                    }
                 });
             } catch (e) { }
         }
 
         async function renderMonitoringCharts() {
             try {
-                const res = await fetch('/logs');
+                const res = await fetch('/logs?limit=100');
                 const data = await res.json();
                 const logs = (data.logs || []).filter(l => l.prediction_error != null).reverse();
+                const canvas = document.getElementById('errorChart');
+                if (!canvas) return;
+
+                if (logs.length === 0) {
+                    const ctx = canvas.getContext('2d');
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.font = '14px Inter';
+                    ctx.fillStyle = '#6B7280';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('Waiting for resolved predictions...', canvas.width / 2, canvas.height / 2);
+                    return;
+                }
+
                 if (errorChart) errorChart.destroy();
-                errorChart = new Chart(document.getElementById('errorChart'), {
+                errorChart = new Chart(canvas, {
                     type: 'line',
                     data: {
                         labels: logs.map(l => safeTime(l.timestamp)),
-                        datasets: [{ label: 'Error', data: logs.map(l => Math.abs(l.prediction_error)), borderColor: '#ef4444', fill: true, tension: 0.3 }]
+                        datasets: [{ label: 'Error', data: logs.map(l => Math.abs(l.prediction_error)), borderColor: '#EF4444', fill: true, tension: 0.3, borderWidth: 3 }]
                     },
-                    options: { responsive: true, maintainAspectRatio: false }
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            x: { grid: { display: false }, ticks: { font: { family: 'Inter' } } },
+                            y: { grid: { color: '#F1F5F9' }, ticks: { font: { family: 'Inter' } } }
+                        }
+                    }
                 });
             } catch (e) { }
         }
@@ -922,9 +1029,11 @@
             document.getElementById('global-loader').style.display = 'none';
         }
 
-        updateDashboard();
-        showPage('overview');
-        setInterval(updateDashboard, 300000);
+        document.addEventListener("DOMContentLoaded", function () {
+            updateDashboard();
+            showPage('overview');
+            setInterval(updateDashboard, 300000);
+        });
     </script>
 </body>
 
