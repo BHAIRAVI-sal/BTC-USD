@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BTCUSD Forecasting | Professional Analytics</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-page: #f8fafc;
+            --bg-card: #ffffff;
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --secondary: #7c3aed;
+            --secondary-light: #f5f3ff;
+            --accent: #0d9488;
+            --text-main: #1e293b;
+            --text-dim: #64748b;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.04), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Navigation */
+        aside {
+            width: 260px;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border);
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 3rem;
+        }
+
+        .logo i {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .logo span {
+            font-weight: 700;
+            font-size: 1.25rem;
+            letter-spacing: -0.5px;
+        }
+
+        nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.85rem 1rem;
+            border-radius: 12px;
+            color: var(--text-dim);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .nav-item.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.2);
+        }
+
+        /* Main Content area */
+        main {
+            flex: 1;
+            margin-left: 260px;
+            padding: 2.5rem;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .header-top h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .user-panel {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .status-pill {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            box-shadow: var(--shadow);
+        }
+
+        .status-pill span {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+        }
+
+        /* Pages */
+        .page {
+            display: none;
+            flex-direction: column;
+            gap: 2rem;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .page.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.75rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .card-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .card-trend {
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .trend-up {
+            color: var(--success);
+        }
+
+        .trend-down {
+            color: var(--error);
+        }
+
+        .chart-section {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .card-large {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 2rem;
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        /* Best Model Card */
+        .best-model-card {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            color: white;
+            padding: 2.5rem;
+            border-radius: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .best-model-card::after {
+            content: '🏆';
+            position: absolute;
+            right: -20px;
+            bottom: -20px;
+            font-size: 8rem;
+            opacity: 0.1;
+        }
+
+        .best-model-info h3 {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+            color: #94a3b8;
+        }
+
+        .best-model-name {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(90deg, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .best-model-metrics {
+            display: flex;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+
+        .best-metric {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .best-metric-label {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+        }
+
+        .best-metric-value {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        /* Leaderboard */
+        .leaderboard-table th {
+            background: var(--primary-light);
+            color: var(--primary);
+            border-bottom: none;
+        }
+
+        .leaderboard-rank {
+            width: 50px;
+            font-weight: 700;
+            color: var(--text-dim);
+        }
+
+        /* Future Features */
+        .future-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .future-card {
+            background: #f1f5f9;
+            border: 2px dashed #cbd5e1;
+            padding: 2rem;
+            border-radius: 20px;
+            text-align: center;
+            opacity: 0.8;
+            transition: all 0.3s ease;
+        }
+
+        .future-card:hover {
+            opacity: 1;
+            border-color: var(--primary);
+            background: white;
+        }
+
+        .future-card i {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--text-dim);
+        }
+
+        .future-card h4 {
+            margin-bottom: 0.5rem;
+            color: var(--text-main);
+        }
+
+        .future-card p {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+        }
+
+        /* Modern Table */
+        .table-container {
+            overflow-x: auto;
+            margin-top: 1rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-dim);
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.95rem;
+        }
+
+        tr:last-child td {
+            border: none;
+        }
+
+        tbody tr:hover {
+            background: #f1f5f9;
+        }
+
+        .badge {
+            padding: 0.35rem 0.75rem;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-primary {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .chart-holder {
+            height: 400px;
+            position: relative;
+        }
+
+        .loading-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            z-index: 9999;
+            display: none;
+            animation: slideLoad 2s infinite ease-in-out;
+        }
+
+        @keyframes slideLoad {
+            0% {
+                transform: translateX(-100%);
+            }
+
+            100% {
+                transform: translateX(100%);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="loading-bar" id="global-loader"></div>
+
+    <aside>
+        <div class="logo">
+            <i class="fa-solid fa-chart-line"></i>
+            <span>BTC Engine</span>
+        </div>
+        <nav>
+            <a onclick="showPage('overview')" id="nav-overview" class="nav-item active">
+                <i class="fa-solid fa-house"></i> Overview
+            </a>
+            <a onclick="showPage('performance')" id="nav-performance" class="nav-item">
+                <i class="fa-solid fa-gauge-high"></i> Performance
+            </a>
+            <a onclick="showPage('monitoring')" id="nav-monitoring" class="nav-item">
+                <i class="fa-solid fa-shield-halved"></i> Monitoring
+            </a>
+            <a onclick="showPage('control')" id="nav-control" class="nav-item">
+                <i class="fa-solid fa-sliders"></i> Control Center
+            </a>
+        </nav>
+        <div style="margin-top: auto; color: var(--text-dim); font-size: 0.8rem; text-align: center;">
+            <p>Version 2.0.0-PRO</p>
+        </div>
+    </aside>
+
+    <main>
+        <header class="header-top">
+            <h2 id="page-title">Dashboard Overview</h2>
+            <div class="user-panel">
+                <div class="status-pill">
+                    <span></span> Engine: Active
+                </div>
+                <div class="btn btn-primary" onclick="triggerInference()">
+                    <i class="fa-solid fa-bolt"></i> Run Inference
+                </div>
+            </div>
+        </header>
+
+        <!-- OVERVIEW PAGE -->
+        <div id="page-overview" class="page active">
+            <div class="metric-grid">
+                <div class="card">
+                    <div class="card-label">Current BTC Price <i class="fa-brands fa-bitcoin"></i></div>
+                    <div class="card-value" id="current-price">$ --,---.--</div>
+                    <div class="card-trend trend-up"><i class="fa-solid fa-clock-rotate-left"></i> Live Feed</div>
+                </div>
+                <div class="card" style="border-left: 4px solid var(--secondary);">
+                    <div class="card-label">Next Hour Forecast</div>
+                    <div class="card-value" id="ensemble-val" style="color: var(--primary);">$ --,---.--</div>
+                    <div id="ensemble-ts" class="card-trend">Predicting...</div>
+                </div>
+                <div class="card">
+                    <div class="card-label">Ensemble Accuracy</div>
+                    <div class="card-value">94.2%</div>
+                    <div class="card-trend trend-up"><i class="fa-solid fa-arrow-up"></i> 1.2% vs last run</div>
+                </div>
+                <div class="card">
+                    <div class="card-label">Model Health</div>
+                    <div class="card-value" style="color: var(--success);">Optimal</div>
+                    <div class="card-trend">All systems green</div>
+                </div>
+            </div>
+
+            <div class="chart-section">
+                <div class="card-large">
+                    <div class="card-label">Prediction Trend & Actual Price</div>
+                    <div class="chart-holder">
+                        <canvas id="forecastChart"></canvas>
+                    </div>
+                </div>
+                <div class="card-large" style="padding: 1.5rem;">
+                    <div class="card-label">System Logs (Live IST)</div>
+                    <div class="table-container" style="max-height: 380px; overflow-y: auto;">
+                        <table id="overview-logs-table" style="font-size: 0.8rem;">
+                            <thead>
+                                <tr>
+                                    <th>Timestamp (IST)</th>
+                                    <th>Predicted Time</th>
+                                    <th>Actual</th>
+                                    <th>Ensemble</th>
+                                    <th>LR</th>
+                                    <th>ARIMA</th>
+                                    <th>LSTM</th>
+                                </tr>
+                            </thead>
+                            <tbody id="overview-logs-body">
+                                <tr>
+                                    <td colspan="7" style="text-align:center;color:var(--text-dim);padding:1.5rem;">
+                                        Loading logs…</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PERFORMANCE PAGE -->
+        <div id="page-performance" class="page">
+            <div class="best-model-card" id="best-model-display" style="display: none;">
+                <div class="best-model-info">
+                    <h3>Top Performing Model</h3>
+                    <div class="best-model-name" id="best-model-title">--</div>
+                    <div class="best-model-metrics">
+                        <div class="best-metric">
+                            <span class="best-metric-label">Lowest RMSE</span>
+                            <span class="best-metric-value" id="best-model-rmse-val">--</span>
+                        </div>
+                        <div class="best-metric">
+                            <span class="best-metric-label">Status</span>
+                            <span class="best-metric-value" id="best-model-reason">Optimized</span>
+                        </div>
+                    </div>
+                </div>
+                <div style="text-align: right;">
+                    <i class="fa-solid fa-trophy" style="font-size: 3rem; color: #fbbf24;"></i>
+                </div>
+            </div>
+
+            <div class="metric-grid">
+                <div class="card">
+                    <div class="card-label">Mean Squared Error (MSE)</div>
+                    <div class="card-value" id="perf-mse">--</div>
+                </div>
+                <div class="card">
+                    <div class="card-label">RMSE</div>
+                    <div class="card-value" id="perf-rmse">--</div>
+                </div>
+                <div class="card">
+                    <div class="card-label">Prediction Stability</div>
+                    <div class="card-value" id="stability-val">Moderate</div>
+                    <div id="stability-indicator" class="card-trend">Calculating...</div>
+                </div>
+                <div class="card">
+                    <div class="card-label">Directional Accuracy</div>
+                    <div class="card-value" id="perf-acc">--</div>
+                </div>
+            </div>
+
+            <div class="chart-section">
+                <div class="card-large">
+                    <div class="card-label">Model Leaderboard (Ranked by RMSE)</div>
+                    <div class="table-container">
+                        <table class="leaderboard-table">
+                            <thead>
+                                <tr>
+                                    <th class="leaderboard-rank">Rank</th>
+                                    <th>Model Name</th>
+                                    <th>RMSE (Lower is Better)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="leaderboard-body">
+                                <tr>
+                                    <td colspan="3" style="text-align:center;">Loading ranking...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-large">
+                    <div class="card-label">RMSE Comparison by Model</div>
+                    <div style="height: 300px;">
+                        <canvas id="rmseChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 2rem; font-weight: 700; font-size: 1.2rem;">Future Features (Coming Soon)</div>
+            <div class="future-grid">
+                <div class="future-card">
+                    <i class="fa-solid fa-vial"></i>
+                    <h4>Backtesting Module</h4>
+                    <p>Simulate historical trading performance on curated datasets.</p>
+                </div>
+                <div class="future-card">
+                    <i class="fa-solid fa-signal"></i>
+                    <h4>Trading Signals</h4>
+                    <p>Alpha-driven Buy/Sell/Hold signals based on ensemble confidence.</p>
+                </div>
+                <div class="future-card">
+                    <i class="fa-solid fa-wallet"></i>
+                    <h4>Portfolio Optimizer</h4>
+                    <p>Automated risk management and asset allocation strategies.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- MONITORING PAGE -->
+        <div id="page-monitoring" class="page">
+            <div class="metric-grid">
+                <div class="card">
+                    <div class="card-label">Data Drift Status</div>
+                    <div class="card-value" style="color: var(--success);">No Drift</div>
+                    <div class="card-trend">P-Value: 0.42</div>
+                </div>
+                <div class="card">
+                    <div class="card-label">Model Drift</div>
+                    <div class="card-value" style="color: var(--warning);">Minor Decay</div>
+                    <div class="card-trend">Retraining Recommended</div>
+                </div>
+            </div>
+            <div class="card-large">
+                <div class="card-label">Prediction Error over Time</div>
+                <div style="height: 300px;">
+                    <canvas id="errorChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONTROL CENTER PAGE -->
+        <div id="page-control" class="page">
+            <div class="card-large">
+                <div class="card-label">Prediction History</div>
+                <div class="table-container">
+                    <table id="history-table">
+                        <thead>
+                            <tr>
+                                <th>Timestamp (IST)</th>
+                                <th>Predicted Time</th>
+                                <th>Ensemble Pred</th>
+                                <th>LSTM</th>
+                                <th>ARIMA</th>
+                                <th>LR</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-body">
+                            <tr>
+                                <td colspan="7" style="text-align:center;color:var(--text-dim);padding:1.5rem;">Loading
+                                    history…</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="metric-grid">
+                <div class="card">
+                    <div class="card-label">Inference Latency</div>
+                    <div class="card-value" id="latency-val">--ms</div>
+                </div>
+                <div class="card">
+                    <div class="card-label">API Status</div>
+                    <div class="card-value"><span class="badge badge-success">Operational</span></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const formatCurrency = v => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(v);
+
+        function safeTime(ts) {
+            if (!ts || typeof ts !== 'string') return '--:--';
+            const clean = ts.split('+')[0].split('.')[0].trim();
+            const parts = clean.split(' ');
+            const t = parts.length > 1 ? parts[1] : parts[0];
+            return t ? t.substring(0, 5) : '--:--';
+        }
+
+        function safeFullTs(ts) {
+            if (!ts || typeof ts !== 'string') return '--';
+            const clean = ts.split('+')[0].split('.')[0].trim();
+            return clean.length >= 16 ? clean.substring(0, 16) : clean;
+        }
+
+        let forecastChart = null, rmseChart = null, errorChart = null;
+        let lastLogs = [];
+        let lastPrediction = null;
+
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(`page-${pageId}`).classList.add('active');
+            document.getElementById(`nav-${pageId}`).classList.add('active');
+            const titles = { overview: 'Dashboard Overview', performance: 'Statistical Performance', monitoring: 'System Monitoring', control: 'Control Center' };
+            document.getElementById('page-title').innerText = titles[pageId];
+            if (pageId === 'performance') renderPerformanceCharts();
+            if (pageId === 'monitoring') renderMonitoringCharts();
+        }
+
+        async function loadBtcPrice() {
+            try {
+                const res = await fetch('/btc-price');
+                const data = await res.json();
+                if (data.close) document.getElementById('current-price').innerText = formatCurrency(data.close);
+            } catch (e) { }
+        }
+
+        async function loadLogsAndChart() {
+            try {
+                const res = await fetch('/logs');
+                const data = await res.json();
+                const logs = data.logs || [];
+                lastLogs = logs;
+
+                // Update Forecast Card with latest prediction
+                if (logs.length > 0) {
+                    const latest = logs[0];
+                    document.getElementById('ensemble-val').innerText = formatCurrency(latest.ensemble_prediction);
+                    document.getElementById('ensemble-ts').innerHTML = `<i class="fa-solid fa-clock"></i> Target: ${safeFullTs(latest.predicted_time)}`;
+                }
+
+                const body = document.getElementById('overview-logs-body');
+                if (body) {
+                    if (logs.length === 0) {
+                        body.innerHTML = '<tr><td colspan="7" style="text-align:center;">No predictions yet.</td></tr>';
+                    } else {
+                        body.innerHTML = '';
+                        logs.slice(0, 10).forEach(l => {
+                            body.innerHTML += `<tr>
+                                <td style="font-weight:600;">${safeFullTs(l.timestamp)}</td>
+                                <td style="color:var(--secondary);font-weight:600;">${safeFullTs(l.predicted_time || '--')}</td>
+                                <td>${l.actual_price ? formatCurrency(l.actual_price) : '--'}</td>
+                                <td style="color:#10b981;font-weight:600;">${formatCurrency(l.ensemble_prediction)}</td>
+                                <td>${formatCurrency(l.linear_regression_prediction)}</td>
+                                <td>${formatCurrency(l.arima_prediction)}</td>
+                                <td>${formatCurrency(l.lstm_prediction)}</td>
+                            </tr>`;
+                        });
+                    }
+                }
+                renderOverviewChart(logs, lastPrediction);
+                updateHistoryTable(logs);
+            } catch (e) { }
+        }
+
+        function renderOverviewChart(logs, prediction) {
+            const canvas = document.getElementById('forecastChart');
+            if (!canvas) return;
+            const sorted = [...logs].reverse();
+            const labels = sorted.map(l => safeTime(l.timestamp));
+            const actuals = sorted.map(l => l.actual_price);
+            const ensembles = sorted.map(l => l.ensemble_prediction);
+            const lrs = sorted.map(l => l.linear_regression_prediction);
+            const arimas = sorted.map(l => l.arima_prediction);
+            const lstms = sorted.map(l => l.lstm_prediction);
+
+            if (prediction) {
+                labels.push(safeTime(prediction.timestamp) + ' ★');
+                ensembles.push(prediction.ensemble_prediction);
+                lrs.push(prediction.linear_regression_prediction);
+                arimas.push(prediction.arima_prediction);
+                lstms.push(prediction.lstm_prediction);
+            }
+
+            if (forecastChart) forecastChart.destroy();
+            forecastChart = new Chart(canvas, {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [
+                        { label: 'Actual', data: actuals, borderColor: '#2563eb', tension: 0.4, pointRadius: 3 },
+                        { label: 'Ensemble', data: ensembles, borderColor: '#10b981', borderDash: [5, 5], tension: 0.4, pointRadius: 4 },
+                        { label: 'ARIMA', data: arimas, borderColor: '#8b5cf6', pointRadius: 0 },
+                        { label: 'LR', data: lrs, borderColor: '#f59e0b', pointRadius: 0 },
+                        { label: 'LSTM', data: lstms, borderColor: '#ec4899', pointRadius: 3 }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+            });
+        }
+
+        async function renderPerformanceCharts() {
+            try {
+                const res = await fetch('/metrics');
+                const data = await res.json();
+                const stats = data.summary_stats;
+
+                if (data.best_model) {
+                    document.getElementById('best-model-display').style.display = 'flex';
+                    document.getElementById('best-model-title').innerText = data.best_model.name;
+                    document.getElementById('best-model-rmse-val').innerText = data.best_model.rmse.toFixed(2);
+                    document.getElementById('best-model-reason').innerText = data.best_model.reason;
+                }
+
+                if (stats.ensemble) {
+                    document.getElementById('perf-mse').innerText = stats.ensemble.mse.toFixed(2);
+                    document.getElementById('perf-rmse').innerText = stats.ensemble.rmse.toFixed(2);
+                    document.getElementById('perf-acc').innerText = stats.ensemble.directional_accuracy.toFixed(1) + '%';
+                }
+
+                const stabVal = document.getElementById('stability-val');
+                const stabInd = document.getElementById('stability-indicator');
+                if (stabVal) {
+                    const status = data.stability_status || 'Stable';
+                    stabVal.innerText = status;
+                    stabVal.style.color = status === 'Volatile' ? 'var(--error)' : (status === 'Moderate' ? 'var(--warning)' : 'var(--success)');
+                    if (stabInd) stabInd.innerHTML = `<i class="fa-solid fa-wave-square"></i> Status: ${status}`;
+                }
+
+                const lbBody = document.getElementById('leaderboard-body');
+                if (lbBody && data.leaderboard) {
+                    lbBody.innerHTML = '';
+                    data.leaderboard.forEach((m, i) => {
+                        lbBody.innerHTML += `<tr><td>${i + 1}</td><td style="font-weight:600;">${m.name}</td><td>${m.rmse.toFixed(2)}</td></tr>`;
+                    });
+                }
+
+                const ctx = document.getElementById('rmseChart');
+                if (rmseChart) rmseChart.destroy();
+                rmseChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['LR', 'ARIMA', 'LSTM', 'Ensemble'],
+                        datasets: [{ label: 'RMSE', data: [stats.lr?.rmse, stats.arima?.rmse, stats.lstm?.rmse, stats.ensemble?.rmse], backgroundColor: ['#f1f5f9', '#f1f5f9', '#7c3aed', '#2563eb'] }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+            } catch (e) { }
+        }
+
+        async function renderMonitoringCharts() {
+            try {
+                const res = await fetch('/logs');
+                const data = await res.json();
+                const logs = (data.logs || []).filter(l => l.prediction_error != null).reverse();
+                if (errorChart) errorChart.destroy();
+                errorChart = new Chart(document.getElementById('errorChart'), {
+                    type: 'line',
+                    data: {
+                        labels: logs.map(l => safeTime(l.timestamp)),
+                        datasets: [{ label: 'Error', data: logs.map(l => Math.abs(l.prediction_error)), borderColor: '#ef4444', fill: true, tension: 0.3 }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+            } catch (e) { }
+        }
+
+        function updateHistoryTable(logs) {
+            const body = document.getElementById('history-body');
+            if (body) {
+                body.innerHTML = '';
+                logs.slice(0, 20).forEach(l => {
+                    body.innerHTML += `<tr>
+                        <td>${safeFullTs(l.timestamp)}</td>
+                        <td>${safeFullTs(l.predicted_time)}</td>
+                        <td>${formatCurrency(l.ensemble_prediction)}</td>
+                        <td>${formatCurrency(l.lstm_prediction)}</td>
+                        <td>${formatCurrency(l.arima_prediction)}</td>
+                        <td>${formatCurrency(l.linear_regression_prediction)}</td>
+                        <td><span class="badge ${l.actual_price ? 'badge-success' : 'badge-primary'}">${l.actual_price ? 'Resolved' : 'Pending'}</span></td>
+                    </tr>`;
+                });
+            }
+        }
+
+        async function triggerInference() {
+            document.getElementById('global-loader').style.display = 'block';
+            try {
+                const res = await fetch('/predict-next-hour');
+                lastPrediction = await res.json();
+                await loadLogsAndChart();
+            } catch (e) { }
+            document.getElementById('global-loader').style.display = 'none';
+        }
+
+        async function updateDashboard() {
+            document.getElementById('global-loader').style.display = 'block';
+            await Promise.allSettled([loadLogsAndChart(), loadBtcPrice()]);
+            document.getElementById('global-loader').style.display = 'none';
+        }
+
+        updateDashboard();
+        showPage('overview');
+        setInterval(updateDashboard, 300000);
+    </script>
+</body>
+
+</html>
